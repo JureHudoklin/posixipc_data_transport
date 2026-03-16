@@ -12,7 +12,7 @@ def main():
         return
 
     for i in range(10):
-        img = reader.get_image()
+        img = reader.get_array("image")
         if img is not None:
              print(f"Read frame {i}, Shape: {img.shape}, Red pixel: {img[0,0,2]}")
         time.sleep(0.1)

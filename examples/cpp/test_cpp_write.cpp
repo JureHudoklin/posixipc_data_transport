@@ -1,10 +1,10 @@
-#include "../../include/posixipc_image_transport.hpp"
+#include "../../include/posixipc_data_transport.hpp"
 #include <iostream>
 #include <vector>
 #include <thread>
 #include <chrono>
 
-using namespace posixipc_image_transport;
+using namespace posixipc_data_transport;
 
 int main() {
     std::cout << "C++ Writer: Starting 'test_cpp_write'..." << std::endl;
@@ -22,7 +22,7 @@ int main() {
             buffer[j+2] = (uint8_t)(i % 255);
         }
         
-        writer.set_image(buffer.data(), size, height, width, channels);
+        writer.set_array("image", buffer.data(), size, {(uint32_t)height, (uint32_t)width, (uint32_t)channels}, DataType::UINT8);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     

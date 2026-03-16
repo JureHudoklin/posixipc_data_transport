@@ -1,10 +1,10 @@
-#include "../../include/posixipc_image_transport.hpp"
+#include "../../include/posixipc_data_transport.hpp"
 #include <iostream>
 #include <vector>
 #include <thread>
 #include <chrono>
 
-using namespace posixipc_image_transport;
+using namespace posixipc_data_transport;
 
 int main() {
     std::cout << "C++ Reader: Waiting for writer 'test_cpp_read'..." << std::endl;
@@ -30,7 +30,8 @@ int main() {
     std::vector<uint8_t> buffer(data_size);
     
     for(int i=0; i<10; ++i) {
-        if(reader.read("image", buffer.data(), buffer.size())) {
+        double timestamp;
+        if(reader.read("image", buffer.data(), buffer.size(), &timestamp)) {
             std::cout << "Read frame " << i << ", First pixel B: " << (int)buffer[0] << std::endl;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));

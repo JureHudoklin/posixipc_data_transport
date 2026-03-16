@@ -273,22 +273,6 @@ class PosixIPCWriter:
         
         return self.channels[suffix]
 
-    def set_image(self, image: np.ndarray, timestamp: Optional[float] = None):
-        ch = self._ensure_channel("image", image)
-        ch.write(image, timestamp)
-
-    def set_depth(self, depth: np.ndarray, timestamp: Optional[float] = None):
-        ch = self._ensure_channel("depth", depth)
-        ch.write(depth, timestamp)
-
-    def set_pointcloud(self, pc: np.ndarray, timestamp: Optional[float] = None):
-        ch = self._ensure_channel("pointcloud", pc)
-        ch.write(pc, timestamp)
-        
-    def set_mask(self, mask: np.ndarray, timestamp: Optional[float] = None):
-        ch = self._ensure_channel("mask", mask)
-        ch.write(mask, timestamp)
-
     def set_array(self, name: str, array: np.ndarray, timestamp: Optional[float] = None):
         ch = self._ensure_channel(name, array)
         ch.write(array, timestamp)
@@ -320,26 +304,6 @@ class PosixIPCReader:
             print(f"Error connecting to {suffix}: {e}")
             return None
 
-    def get_image(self, return_timestamp: bool = False) -> Union[Optional[np.ndarray], Tuple[Optional[np.ndarray], Optional[float]]]:
-        ch = self._get_channel("image")
-        if ch: return ch.read(return_timestamp)
-        return (None, None) if return_timestamp else None
-
-    def get_depth(self, return_timestamp: bool = False) -> Union[Optional[np.ndarray], Tuple[Optional[np.ndarray], Optional[float]]]:
-        ch = self._get_channel("depth")
-        if ch: return ch.read(return_timestamp)
-        return (None, None) if return_timestamp else None
-
-    def get_pointcloud(self, return_timestamp: bool = False) -> Union[Optional[np.ndarray], Tuple[Optional[np.ndarray], Optional[float]]]:
-        ch = self._get_channel("pointcloud")
-        if ch: return ch.read(return_timestamp)
-        return (None, None) if return_timestamp else None
-
-    def get_mask(self, return_timestamp: bool = False) -> Union[Optional[np.ndarray], Tuple[Optional[np.ndarray], Optional[float]]]:
-        ch = self._get_channel("mask")
-        if ch: return ch.read(return_timestamp)
-        return (None, None) if return_timestamp else None
-        
     def get_array(self, name: str, return_timestamp: bool = False) -> Union[Optional[np.ndarray], Tuple[Optional[np.ndarray], Optional[float]]]:
         ch = self._get_channel(name)
         if ch: return ch.read(return_timestamp)

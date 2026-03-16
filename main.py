@@ -20,9 +20,9 @@ def writer_process(base_name, iterations=20):
         pc = np.random.rand(*pc_shape).astype(np.float32) * i
         
         # Write
-        writer.set_image(img)
-        writer.set_depth(depth)
-        writer.set_pointcloud(pc)
+        writer.set_array("image", img)
+        writer.set_array("depth", depth)
+        writer.set_array("pointcloud", pc)
         
         # print(f"[Writer] Wrote frame {i}")
         time.sleep(0.05)
@@ -41,9 +41,9 @@ def reader_process(base_name, iterations=20):
     
     count = 0
     while count < iterations:
-        img = reader.get_image()
-        depth = reader.get_depth()
-        pc = reader.get_pointcloud()
+        img = reader.get_array("image")
+        depth = reader.get_array("depth")
+        pc = reader.get_array("pointcloud")
         
         if img is not None:
             # print(f"[Reader] Got image {img.shape} val={img[0,0,0]}")

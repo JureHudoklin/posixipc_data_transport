@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 
-namespace posixipc_image_transport {
+namespace posixipc_data_transport {
 
 static const size_t HEADER_SIZE = 64;
 static const uint32_t MAGIC = 0x12345678;
@@ -264,14 +264,9 @@ public:
         return channels[suffix];
     }
     
-    void set_data(const std::string& suffix, const void* data, size_t data_byte_size, const std::vector<uint32_t>& shape, DataType dtype, double timestamp = -1.0) {
+    void set_array(const std::string& suffix, const void* data, size_t data_byte_size, const std::vector<uint32_t>& shape, DataType dtype, double timestamp = -1.0) {
         auto ch = ensure_channel(suffix, shape, dtype);
         ch->write(data, data_byte_size, timestamp);
-    }
-    
-    // Helper helpers
-    void set_image(const void* data, size_t size, uint32_t height, uint32_t width, uint32_t channels, DataType dtype=DataType::UINT8, double timestamp = -1.0) {
-        set_data("image", data, size, {height, width, channels}, dtype, timestamp);
     }
 };
 

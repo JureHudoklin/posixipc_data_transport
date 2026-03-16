@@ -12,7 +12,7 @@ def main():
     count = 0
     while True:
         img[:, :, 0] = count % 255 # Blue channel cycles
-        writer.set_image(img)
+        writer.set_array("image", img)
         count += 1
         time.sleep(0.1)
         if count > 50: break # Run for 5 seconds

@@ -1,7 +1,7 @@
 [project]
-name = "posixipc-image-transport"
-version = "0.2.0"
-description = "Fast shared memory transport for images and numpy arrays"
+name = "posixipc-data-transport"
+version = "0.3.0"
+description = "Fast shared memory transport for numpy arrays between processes"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
