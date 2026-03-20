@@ -267,9 +267,13 @@ class PosixIPCWriter:
                  # For simplicity, warn and recreate (which unlinks old one)
                  # But unlinking old one breaks readers.
                  # Let's enforce static shapes for now.
-                 if ch.shape != data.shape:
-                    raise ValueError(f"Data shape changed for {suffix}. Old: {ch.shape}, New: {data.shape}. Dynamic resizing not supported yet.")
-                 pass # Dtypes should match or be castable
+                 if ch.shape != data.shape or ch.dtype != data.dtype:
+                    # Shape/dtype changed; cleanly recreate the channel so the
+                    # SHM always reflects the current data dimensions.
+                    ch.cleanup()
+                    self.channels[suffix] = ChannelHandler(
+                        channel_name, create=True,
+                        shape=data.shape, dtype=data.dtype)
         
         return self.channels[suffix]
 
@@ -290,10 +294,29 @@ class PosixIPCReader:
         self.channels = {} # type: dict[str, ChannelHandler]
         
     def _get_channel(self, suffix: str) -> Optional[ChannelHandler]:
-        if suffix in self.channels:
-            return self.channels[suffix]
-        
         channel_name = f"{self.base_name}_{suffix}"
+
+        if suffix in self.channels:
+            ch = self.channels[suffix]
+            # Probe the SHM size to detect whether the writer recreated the
+            # channel (e.g. because the data shape changed).
+            try:
+                probe = posix_ipc.SharedMemory(ch.shm_name)
+                current_size = probe.size
+                probe.close_fd()
+            except posix_ipc.ExistentialError:
+                # SHM was removed; evict the stale entry and reconnect below.
+                ch.close()
+                del self.channels[suffix]
+            except Exception:
+                return ch  # Unexpected error – keep using the cached channel.
+            else:
+                if current_size == ch.size:
+                    return ch  # Same SHM, still valid.
+                # Size changed – writer recreated with different dimensions.
+                ch.close()
+                del self.channels[suffix]
+
         try:
             ch = ChannelHandler(channel_name, create=False)
             self.channels[suffix] = ch
